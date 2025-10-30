@@ -1,0 +1,25 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Ensure proper encoding for Uzbek text
+*.md text eol=lf encoding=utf-8
+*.json text eol=lf encoding=utf-8
+*.ts text eol=lf encoding=utf-8
+*.tsx text eol=lf encoding=utf-8
+*.js text eol=lf encoding=utf-8
+*.css text eol=lf encoding=utf-8
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.ttf binary
+*.otf binary

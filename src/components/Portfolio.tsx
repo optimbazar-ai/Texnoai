@@ -5,6 +5,11 @@ import { getPortfolioData } from '../data/portfolioData';
 
 const Portfolio: React.FC = () => {
   const [portfolioItems] = useState<PortfolioItem[]>(getPortfolioData());
+  const [showAll, setShowAll] = useState(false);
+
+  // Asosiy sahifada faqat 6 ta ko'rsatish
+  const INITIAL_DISPLAY_COUNT = 6;
+  const displayedItems = showAll ? portfolioItems : portfolioItems.slice(0, INITIAL_DISPLAY_COUNT);
 
   return (
     <section id="portfolio" className="py-20 bg-dark-card/50">
@@ -20,7 +25,7 @@ const Portfolio: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolioItems.map((item) => (
+          {displayedItems.map((item) => (
             <div
               key={item.id}
               className="glass-card overflow-hidden hover:scale-105 transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/20"
@@ -64,11 +69,36 @@ const Portfolio: React.FC = () => {
         </div>
 
         <div className="text-center mt-12">
+          {portfolioItems.length > INITIAL_DISPLAY_COUNT && !showAll && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="btn-secondary mr-4"
+            >
+              Ko'proq ko'rish ({portfolioItems.length - INITIAL_DISPLAY_COUNT}+ loyiha)
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
+          {showAll && (
+            <button
+              onClick={() => setShowAll(false)}
+              className="btn-secondary mr-4"
+            >
+              Kamroq ko'rish
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+          )}
           <Link
-            to="/#admin"
-            className="btn-secondary"
+            to="/portfolio"
+            className="btn-primary"
           >
-            Barcha loyihalarni ko'rish
+            Barcha loyihalar
+            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
           </Link>
         </div>
       </div>

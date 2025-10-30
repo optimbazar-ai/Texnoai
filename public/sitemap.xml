@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://texnoai.uz/</loc>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Blog Page -->
+  <url>
+    <loc>https://texnoai.uz/blog</loc>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Portfolio Page -->
+  <url>
+    <loc>https://texnoai.uz/portfolio</loc>
+    <lastmod>2025-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Admin Panel (optional, can be removed or disallowed) -->
+  <!-- Not included in sitemap as it's disallowed in robots.txt -->
+</urlset>

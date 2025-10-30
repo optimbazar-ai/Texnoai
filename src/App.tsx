@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -16,9 +17,13 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import PortfolioDetail from './components/PortfolioDetail';
 import BlogDetail from './components/BlogDetail';
+import BlogPage from './pages/BlogPage';
+import PortfolioPage from './pages/PortfolioPage';
+import GeminiDemoPage from './pages/GeminiDemoPage';
 import AdminPanel from './components/admin/AdminPanel';
 import ScrollToTop from './components/ScrollToTop';
 import SEO from './components/SEO';
+import LiveChat from './components/LiveChat';
 
 const HomePage: React.FC = () => {
   return (
@@ -51,15 +56,21 @@ const HomePage: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/portfolio/:id" element={<><Header /><PortfolioDetail /><Footer /></>} />
-        <Route path="/blog/:id" element={<><Header /><BlogDetail /><Footer /></>} />
-        <Route path="/admin/*" element={<AdminPanel />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/blog" element={<><Header /><BlogPage /><Footer /></>} />
+          <Route path="/blog/:id" element={<><Header /><BlogDetail /><Footer /></>} />
+          <Route path="/portfolio" element={<><Header /><PortfolioPage /><Footer /></>} />
+          <Route path="/portfolio/:id" element={<><Header /><PortfolioDetail /><Footer /></>} />
+          <Route path="/demolar" element={<><Header /><GeminiDemoPage /><Footer /></>} />
+          <Route path="/admin/*" element={<AdminPanel />} />
+        </Routes>
+        <LiveChat />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 };
 

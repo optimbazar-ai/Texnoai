@@ -1,0 +1,11 @@
+# TexnoAI - Robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://texnoai.uz/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

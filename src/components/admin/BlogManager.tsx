@@ -4,6 +4,7 @@ import { isAuthenticated, getCurrentUser, clearSession } from '../../utils/sessi
 import { BlogPost } from '../../types';
 import { getBlogData, saveBlogData } from '../../data/blogData';
 import { generateBlogPost } from '../../services/geminiService';
+import { postToTelegramChannel } from '../../services/telegramService';
 import ImageUpload from './ImageUpload';
 
 const BlogManager: React.FC = () => {
@@ -96,7 +97,7 @@ const BlogManager: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const post: BlogPost = {
@@ -111,6 +112,8 @@ const BlogManager: React.FC = () => {
     };
 
     let updated: BlogPost[];
+    const isNewPost = !currentPost;
+    
     if (currentPost) {
       updated = blogPosts.map(p => p.id === currentPost.id ? post : p);
     } else {
@@ -119,6 +122,22 @@ const BlogManager: React.FC = () => {
 
     setBlogPosts(updated);
     saveBlogData(updated);
+    
+    // Yangi blog Telegram'ga yuborish
+    if (isNewPost) {
+      console.log('📱 Telegram kanalga blog post yuborilmoqda...');
+      try {
+        const result = await postToTelegramChannel(post);
+        if (result.success) {
+          console.log('✅ Blog post Telegram kanalga yuborildi!');
+        } else {
+          console.warn('⚠️ Blog post Telegram kanalga yuborilmadi:', result.error);
+        }
+      } catch (error) {
+        console.error('❌ Telegram yuborishda xato:', error);
+      }
+    }
+    
     setIsEditing(false);
     setCurrentPost(null);
   };

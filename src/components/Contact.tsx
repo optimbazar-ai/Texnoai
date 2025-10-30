@@ -5,6 +5,7 @@ const Contact: React.FC = () => {
   const [formData, setFormData] = useState<ContactForm>({
     name: '',
     email: '',
+    phone: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,17 +21,37 @@ const Contact: React.FC = () => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
-    // Simulate form submission
-    setTimeout(() => {
-      console.log('Form submitted:', formData);
-      setSubmitStatus('success');
-      setIsSubmitting(false);
-      setFormData({ name: '', email: '', message: '' });
+    try {
+      // Send to Telegram bot for admin notification
+      const response = await fetch('http://localhost:3001/api/contact-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        console.log('Form submitted:', formData);
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', phone: '', message: '' });
+        
+        setTimeout(() => {
+          setSubmitStatus('idle');
+        }, 5000);
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus('error');
       
       setTimeout(() => {
         setSubmitStatus('idle');
-      }, 3000);
-    }, 1000);
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -83,6 +104,22 @@ const Contact: React.FC = () => {
                     required
                     className="w-full px-4 py-3 bg-dark-bg border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary transition-colors duration-300"
                     placeholder="email@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-white font-medium mb-2">
+                    Telefon raqam
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 bg-dark-bg border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary transition-colors duration-300"
+                    placeholder="+998 90 123 45 67"
                   />
                 </div>
 
@@ -140,8 +177,8 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-white font-semibold mb-1">Telefon</h4>
-                    <p className="text-dark-subtext">+998 90 123 45 67</p>
-                    <p className="text-dark-subtext">+998 90 987 65 43</p>
+                    <p className="text-dark-subtext">+998 97 477 12 29</p>
+                    <p className="text-dark-subtext">+998 99 644 84 44</p>
                   </div>
                 </div>
 

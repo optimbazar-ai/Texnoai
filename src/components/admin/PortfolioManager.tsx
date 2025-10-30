@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { isAuthenticated, hasRole, getCurrentUser, clearSession } from '../../utils/sessionManager';
 import { PortfolioItem } from '../../types';
 import { getPortfolioData, savePortfolioData } from '../../data/portfolioData';
+import { postPortfolioToTelegram } from '../../services/telegramService';
 import ImageUpload from './ImageUpload';
 
 const PortfolioManager: React.FC = () => {
@@ -71,7 +72,7 @@ const PortfolioManager: React.FC = () => {
     setShowDeleteConfirm(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const item: PortfolioItem = {
@@ -85,6 +86,8 @@ const PortfolioManager: React.FC = () => {
     };
 
     let updated: PortfolioItem[];
+    const isNewItem = !currentItem;
+    
     if (currentItem) {
       updated = portfolioItems.map(i => i.id === currentItem.id ? item : i);
     } else {
@@ -93,6 +96,22 @@ const PortfolioManager: React.FC = () => {
 
     setPortfolioItems(updated);
     savePortfolioData(updated);
+    
+    // Yangi portfolio Telegram'ga yuborish
+    if (isNewItem) {
+      console.log('📱 Telegram kanalga portfolio yuborilmoqda...');
+      try {
+        const result = await postPortfolioToTelegram(item);
+        if (result.success) {
+          console.log('✅ Portfolio Telegram kanalga yuborildi!');
+        } else {
+          console.warn('⚠️ Portfolio Telegram kanalga yuborilmadi:', result.error);
+        }
+      } catch (error) {
+        console.error('❌ Telegram yuborishda xato:', error);
+      }
+    }
+    
     setIsEditing(false);
     setCurrentItem(null);
   };

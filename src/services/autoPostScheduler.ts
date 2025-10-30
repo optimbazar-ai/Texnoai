@@ -1,28 +1,49 @@
 import { generateBlogPost } from './geminiService';
 import { getBlogData, saveBlogData } from '../data/blogData';
 import { BlogPost } from '../types';
+import { postToTelegramChannel } from './telegramService';
 
 // Har kuni qo'shiladigan mavzular ro'yxati (sohalarga bo'lingan)
 const topics = {
-  ai_tech: [
-    "Sun'iy intellekt va mashinali o'rganish asoslari",
-    "ChatGPT va GPT-4: Yangiliklar va imkoniyatlar",
-    "AI biznes jarayonlarida: Qo'llanish misollari",
-    "Neural tarmoqlar va chuqur o'rganish",
-    "Computer Vision: Tasvirlarni tahlil qilish",
-    "Natural Language Processing (NLP) asoslari",
-    "AI va Big Data: Ma'lumotlarni qayta ishlash",
-    "Machine Learning algoritmlari: Tasnif va regressiya"
+  ai_news: [
+    "OpenAI GPT-5: Kutilayotgan yangiliklar va imkoniyatlar",
+    "Google Gemini 2.0: Yangi funksiyalar va o'zgarishlar",
+    "Microsoft Copilot: AI yordamchi yangiliklari",
+    "Claude 3.5 Sonnet: Anthropic'dan yangi model",
+    "AI yangiliklari 2024: Eng muhim texnologik o'zgarishlar",
+    "DeepMind AlphaFold 3: Tibbiyotda AI yangiliklari",
+    "Midjourney V6: Rasm generatsiya qilishda yangi era",
+    "Sora: OpenAI'dan video generatsiya vositasi"
   ],
-  web_dev: [
-    "React 19: Yangi xususiyatlar va yaxshilanishlar",
-    "TypeScript bilan zamonaviy veb-dasturlash",
-    "Responsive dizayn: Mobile-first yondashuv",
-    "Web performance optimizatsiya usullari",
-    "Progressive Web Apps (PWA) yaratish",
-    "API dizayni va RESTful best practices",
-    "Frontend Security: XSS va CSRF himoyasi",
-    "Veb-sayt SEO optimizatsiya strategiyalari"
+  ai_prompts: [
+    "ChatGPT uchun eng yaxshi promptlar to'plami",
+    "Prompt engineering asoslari va best practices",
+    "AI bilan samarali ishlash: 50+ foydali prompt",
+    "Biznes uchun ChatGPT promptlari: Marketing va Sales",
+    "Kreativ yozuvlar uchun AI promptlar",
+    "Dasturlash uchun ChatGPT prompts: Code generation",
+    "Tarjima va til o'rganish uchun AI promptlari",
+    "Rasmlar yaratish: Midjourney va DALL-E promptlar"
+  ],
+  ai_trends: [
+    "2024-yil AI trendlari: Nimalarga tayyor bo'lish kerak",
+    "Multimodal AI: Matn, rasm va ovoz birgalikda",
+    "AI Agents: Avtonom AI yordamchilar davri",
+    "Edge AI: Qurilmalarda AI ishlatish trendi",
+    "AI va etika: Javobgarlik masalalari",
+    "Personalized AI: Har bir foydalanuvchi uchun maxsus",
+    "AI in Education: Ta'limda sun'iy intellekt",
+    "Generative AI: Kontent yaratishda yangi imkoniyatlar"
+  ],
+  ai_tools: [
+    "Top 10 AI vositalari 2024: Har bir vazifa uchun",
+    "ChatGPT alternativlari: Qaysi biri sizga mos?",
+    "AI yozuv yordamchilari: Jasper, Copy.ai, Writesonic",
+    "Dizayn uchun AI vositalari: Canva AI, Adobe Firefly",
+    "Video montaj uchun AI: Descript, Runway, Pictory",
+    "AI marketing vositalari: Avtomatlashtirish va tahlil",
+    "Kod yozish uchun AI: GitHub Copilot, Cursor, Replit",
+    "AI chatbotlar: Biznes uchun eng yaxshi yechimlar"
   ],
   business: [
     "Raqamli marketing strategiyalari 2024",
@@ -34,47 +55,47 @@ const topics = {
     "Content Marketing: Samarali kontent yaratish",
     "Email marketing: Ro'yxat yaratish va konversiya"
   ],
-  telegram: [
-    "Telegram botlar: Biznes uchun foydalanish",
-    "Telegram Marketing: Kanal va guruhlar strategiyasi",
-    "Telegram bot yaratish: Step-by-step qo'llanma",
-    "Telegram Mini Apps: Yangi imkoniyatlar",
-    "Telegram to'lov tizimlari integratsiyasi",
-    "Telegram avtomatlashtirish: Bot va API",
-    "Telegram biznes hisobi: Imkoniyatlar va sozlamalar",
-    "Telegram statistika va tahlil vositalari"
+  tech_tips: [
+    "ChatGPT bilan daromad qilish: 10 ta real usul",
+    "AI bilan kreativ kontent yaratish sirlari",
+    "Telegram orqali pul topish: Bepul kurs va metodlar",
+    "Freelancing 2024: AI vositalar bilan ishlash",
+    "Instagram uchun AI-generated content yaratish",
+    "YouTube shorts uchun AI video generatsiya",
+    "AI bilan podcast yaratish: Asboblar va jarayonlar",
+    "Online biznes uchun AI marketing strategiyalari"
   ],
-  automation: [
-    "Biznes jarayonlarini avtomatlashtirish yo'llari",
-    "No-code/Low-code platformalar: Zapier, Make, n8n",
-    "Workflow automation: Asosiy tamoyillar",
-    "RPA (Robotic Process Automation) texnologiyasi",
-    "Marketing automation: Vositalar va strategiyalar",
-    "Avtomatik hisobotlar yaratish tizimlari",
-    "AI-powered automation: Kelajak shu yerda",
-    "DevOps va CI/CD: Deployment avtomatlashtiruvi"
+  ai_cases: [
+    "Real biznesda AI qo'llanishi: 15+ misol",
+    "ChatGPT bilan biznes samaradorligini oshirish",
+    "AI yordamida konversiya darajasini oshirish",
+    "E-commerce'da AI: Mahsulot tavsiyalari",
+    "AI chatbot: Mijozlar bilan ishlashni avtomatlashtirish",
+    "Reklama kampaniyalarida AI analytics",
+    "AI content generator: SMM uchun qo'llanma",
+    "Logistikada AI: Marshrutlarni optimallashtirish"
   ],
-  uzbekistan: [
-    "O'zbekistonda IT biznes: Imkoniyatlar va qiyinchiliklar",
-    "Toshkentdagi texnoparklarlar va startup ekotizimi",
-    "O'zbekiston raqamli iqtisodiyot: Istiqbollar",
-    "Mahalliy IT kompaniyalar: Muvaffaqiyat tarixi",
-    "Freelancing O'zbekistonda: Qanday boshlash",
-    "IT ta'lim O'zbekistonda: Universitetlar va kurslar",
-    "E-government: O'zbekistonda raqamli xizmatlar",
-    "IT sohasida ish topish: O'zbek bozori"
+  productivity: [
+    "AI productivity hacks: Kunlik samaradorlikni oshirish",
+    "Notion AI: Hujjatlar bilan ishlashni avtomatlashtirish",
+    "Obsidian + AI: Bilimlarni boshqarish tizimi",
+    "AI Email Assistant: Pochta bilan tezkor ishlash",
+    "Calendar automation: Uchrashuv va vazifalarni rejalashtirish",
+    "AI transcription: Audio va videoni matnга",
+    "Focus apps: AI bilan chalg'itishsiz ishlash",
+    "Personal AI assistant: Kundalik yordamchi"
   ]
 };
 
 // Haftaning qaysi kunida qaysi soha (har kuni 1-2 soha)
 const dailyTopics = {
-  0: ['ai_tech', 'web_dev'], // Yakshanba
-  1: ['business', 'telegram'], // Dushanba
-  2: ['automation', 'uzbekistan'], // Seshanba
-  3: ['ai_tech', 'business'], // Chorshanba
-  4: ['web_dev', 'automation'], // Payshanba
-  5: ['telegram', 'uzbekistan'], // Juma
-  6: ['ai_tech', 'web_dev'] // Shanba
+  0: ['ai_news', 'ai_prompts'], // Yakshanba - AI yangiliklari
+  1: ['ai_trends', 'tech_tips'], // Dushanba - Trendlar va maslahatlar
+  2: ['ai_tools', 'productivity'], // Seshanba - Vositalar va samaradorlik
+  3: ['ai_cases', 'business'], // Chorshanba - Amaliy misollar
+  4: ['ai_prompts', 'tech_tips'], // Payshanba - Promptlar va tips
+  5: ['ai_news', 'ai_cases'], // Juma - Yangiliklar va case study
+  6: ['ai_trends', 'ai_tools'] // Shanba - Trendlar va vositalar
 };
 
 interface SchedulerConfig {
@@ -84,6 +105,7 @@ interface SchedulerConfig {
   endTime: string; // Format: "HH:MM" (24-hour)
   lastRunDate: string;
   postsCreatedToday: number;
+  telegramEnabled: boolean; // Telegram kanalga yuborish
 }
 
 const DEFAULT_CONFIG: SchedulerConfig = {
@@ -92,13 +114,19 @@ const DEFAULT_CONFIG: SchedulerConfig = {
   startTime: "09:00",
   endTime: "21:00",
   lastRunDate: "",
-  postsCreatedToday: 0
+  postsCreatedToday: 0,
+  telegramEnabled: true
 };
 
 // LocalStorage'dan sozlamalarni olish
 const getConfig = (): SchedulerConfig => {
   const saved = localStorage.getItem('autoPostConfig');
-  return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    // Default qiymatlar bilan birlashtirish (yangi maydonlar uchun)
+    return { ...DEFAULT_CONFIG, ...parsed };
+  }
+  return DEFAULT_CONFIG;
 };
 
 // Sozlamalarni saqlash
@@ -106,7 +134,28 @@ const saveConfig = (config: SchedulerConfig): void => {
   localStorage.setItem('autoPostConfig', JSON.stringify(config));
 };
 
-// Bugungi kun uchun mavzularni tanlash
+// Ishlatilgan mavzularni olish
+const getUsedTopics = (): string[] => {
+  const saved = localStorage.getItem('usedTopics');
+  return saved ? JSON.parse(saved) : [];
+};
+
+// Ishlatilgan mavzularni saqlash
+const saveUsedTopic = (topic: string): void => {
+  const used = getUsedTopics();
+  if (!used.includes(topic)) {
+    used.push(topic);
+    localStorage.setItem('usedTopics', JSON.stringify(used));
+  }
+};
+
+// Ishlatilgan mavzularni tozalash (haftalik yoki ular tugaganda)
+const clearUsedTopics = (): void => {
+  localStorage.removeItem('usedTopics');
+  console.log('🔄 Ishlatilgan mavzular tozalandi');
+};
+
+// Bugungi kun uchun mavzularni tanlash (takrorlanmaslik uchun)
 const getTodayTopics = (count: number): string[] => {
   const today = new Date().getDay();
   const categories = dailyTopics[today as keyof typeof dailyTopics];
@@ -119,9 +168,23 @@ const getTodayTopics = (count: number): string[] => {
     allTopics.push(...topics[category as keyof typeof topics]);
   });
   
-  // Random tanlash
-  const shuffled = allTopics.sort(() => Math.random() - 0.5);
+  // Allaqachon ishlatilgan mavzularni filter qilish
+  const usedTopics = getUsedTopics();
+  const availableTopics = allTopics.filter(topic => !usedTopics.includes(topic));
+  
+  // Agar barcha mavzular ishlatilgan bo'lsa, tozalash va qayta boshlash
+  if (availableTopics.length < count) {
+    console.log('♻️ Barcha mavzular ishlatilgan, qayta boshlash...');
+    clearUsedTopics();
+    return getTodayTopics(count); // Recursive call
+  }
+  
+  // Random tanlash (har doim yangi mavzular)
+  const shuffled = availableTopics.sort(() => Math.random() - 0.5);
   selectedTopics.push(...shuffled.slice(0, count));
+  
+  // Tanlangan mavzularni "ishlatilgan" deb belgilash
+  selectedTopics.forEach(topic => saveUsedTopic(topic));
   
   return selectedTopics;
 };
@@ -136,7 +199,7 @@ const createSinglePost = async (topic: string): Promise<BlogPost | null> => {
     const enhancedPost: BlogPost = {
       ...post,
       tags: [
-        ...post.tags,
+        ...(post.tags || []),
         'SEO',
         'TexnoAI',
         "O'zbekiston",
@@ -176,6 +239,21 @@ const createSinglePostScheduled = async (): Promise<void> => {
     saveConfig(config);
     
     console.log(`✅ Post muvaffaqiyatli yaratildi! (${config.postsCreatedToday}/${topics.length})`);
+    
+    // Telegram kanalga yuborish
+    if (config.telegramEnabled) {
+      console.log('📱 Telegram kanalga yuborilmoqda...');
+      try {
+        const telegramResult = await postToTelegramChannel(post);
+        if (telegramResult.success) {
+          console.log('✅ Telegram kanalga yuborildi!');
+        } else {
+          console.warn('⚠️ Telegram yuborishda muammo:', telegramResult.error);
+        }
+      } catch (error) {
+        console.error('❌ Telegram xatosi:', error);
+      }
+    }
   }
 };
 
@@ -296,6 +374,11 @@ export const updateSchedulerConfig = (newConfig: Partial<SchedulerConfig>): void
 // Sozlamalarni olish
 export const getSchedulerConfig = (): SchedulerConfig => {
   return getConfig();
+};
+
+// Ishlatilgan mavzularni tozalash (export for admin panel)
+export const resetUsedTopics = (): void => {
+  clearUsedTopics();
 };
 
 // Keyingi ishga tushirish vaqtini hisoblash

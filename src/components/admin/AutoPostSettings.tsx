@@ -47,6 +47,12 @@ const AutoPostSettings: React.FC = () => {
     setConfig({ ...config, dailyPostCount: newCount });
   };
 
+  const handleTelegramToggle = () => {
+    const newEnabled = !config.telegramEnabled;
+    updateSchedulerConfig({ telegramEnabled: newEnabled });
+    setConfig({ ...config, telegramEnabled: newEnabled });
+  };
+
   const handleManualGenerate = async () => {
     if (testCount < 1 || testCount > 10) {
       alert('1 dan 10 gacha son kiriting');
@@ -155,6 +161,21 @@ const AutoPostSettings: React.FC = () => {
         <p className="text-xs text-dark-subtext">
           ⏰ Postlar bu vaqt oralig'ida teng taqsimlanadi. Masalan: 8 ta post 09:00-21:00 = har 1.5 soatda 1 ta post
         </p>
+
+        <div>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={config.telegramEnabled}
+              onChange={handleTelegramToggle}
+              className="w-5 h-5 text-brand-primary bg-dark-bg border-gray-700 rounded focus:ring-brand-primary"
+            />
+            <div>
+              <span className="text-dark-text font-medium">📱 Telegram kanalga yuborish</span>
+              <p className="text-xs text-dark-subtext">Har bir post avtomatik Telegram kanalingizga yuboriladi</p>
+            </div>
+          </label>
+        </div>
       </div>
 
       {/* Manual test */}

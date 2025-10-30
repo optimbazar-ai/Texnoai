@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Frontend React App
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: texnoai-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - telegram-bot
+    restart: unless-stopped
+    networks:
+      - texnoai-network
+
+  # Telegram Bot Backend
+  telegram-bot:
+    build:
+      context: ./telegram-bot
+      dockerfile: Dockerfile
+    container_name: texnoai-telegram-bot
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./telegram-bot/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    restart: unless-stopped
+    networks:
+      - texnoai-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  texnoai-network:
+    driver: bridge
+
+volumes:
+  frontend-data:
+  bot-data:

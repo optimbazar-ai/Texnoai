@@ -23,16 +23,22 @@ TexnoAI is a professional business website built on Google Gemini AI technology.
 
 ### AI Integration
 - 🤖 Google Gemini AI (@google/genai 1.27.0)
-- 💬 AI Chat Demo
+- 💬 Live Chat / AI Chatbot (FAQ + Gemini AI)
 - 🎨 Image Generation Prompt
 - 📝 Text Summarization
 - 🌍 Multi-language Translation
 - 💻 Code Generator
 - 📊 JSON Generator
+- 📱 Telegram Bot Integration
+- 📡 Auto-posting to Telegram Channel
 
 ### Features
 - 📁 Dynamic Portfolio Management
 - 📝 Blog System with AI-powered Content Generation
+- 🤖 Auto-post Scheduler (8 posts/day, 09:00-21:00)
+- 📱 Telegram Bot with Commands
+- 📡 Auto-posting to Telegram Channel
+- 💬 Live Chat with AI Assistant
 - 🔐 Admin Panel with Role-based Access
 - 👥 User Authentication & Session Management (8 hours)
 - 📸 Image Upload (Base64)
@@ -116,6 +122,7 @@ texnoai/
 │   │   ├── CTA.tsx
 │   │   ├── Contact.tsx
 │   │   ├── Footer.tsx
+│   │   ├── LiveChat.tsx      # ⭐ Live Chat AI Bot
 │   │   ├── SEO.tsx
 │   │   ├── ScrollToTop.tsx
 │   │   ├── PortfolioDetail.tsx
@@ -126,19 +133,29 @@ texnoai/
 │   │       ├── Login.tsx
 │   │       ├── PortfolioManager.tsx
 │   │       ├── BlogManager.tsx
-│   │       └── ImageUpload.tsx
+│   │       ├── ImageUpload.tsx
+│   │       └── AutoPostSettings.tsx  # ⭐ Auto-post sozlamalari
 │   ├── data/                 # Ma'lumotlar
 │   │   ├── portfolioData.ts
 │   │   └── blogData.ts
 │   ├── services/             # Xizmatlar
-│   │   └── geminiService.ts
+│   │   ├── geminiService.ts
+│   │   ├── telegramService.ts    # ⭐ Telegram integratsiya
+│   │   └── autoPostScheduler.ts  # ⭐ Avtomatik post scheduler
 │   ├── utils/                # Yordamchi funksiyalar
 │   │   └── sessionManager.ts
 │   ├── types.ts              # TypeScript turlari
 │   ├── App.tsx               # Asosiy komponent
 │   ├── main.tsx              # Kirish nuqtasi
 │   └── index.css             # Global stillar
+├── telegram-bot/             # ⭐ Telegram Bot Backend
+│   ├── index.js              # Bot server
+│   ├── package.json
+│   ├── .env.example
+│   ├── .gitignore
+│   └── README.md
 ├── public/                   # Statik fayllar
+│   └── clear-storage.html    # LocalStorage tozalash
 ├── .env.example              # Environment namunasi
 ├── .env.local                # Environment o'zgaruvchilari (git ignore)
 ├── index.html                # HTML shablon
@@ -177,6 +194,97 @@ http://localhost:3000/admin
 - 📸 Rasm yuklash (Base64)
 - 🔒 Session boshqaruvi (8 soat)
 - 👥 Rol asosida kirish
+
+## 💬 Live Chat / AI Chatbot
+
+### Xususiyatlar / Features
+- ✅ Floating chat button
+- ✅ Real-time AI responses (Gemini AI)
+- ✅ FAQ auto-responses (15+ topics)
+- ✅ Chat history (LocalStorage)
+- ✅ Typing indicator
+- ✅ Quick reply buttons
+- ✅ Unread message counter
+
+### FAQ Mavzular / FAQ Topics
+- 💰 Narxlar (Pricing)
+- ⏰ Muddat (Timeline)
+- 🔧 Texnologiyalar (Technologies)
+- 📊 Portfolio
+- 📞 Kontakt (Contact)
+- 🎯 Xizmatlar (Services)
+
+### Qanday ishlaydi / How it works
+1. Foydalanuvchi savol beradi
+2. Sistema FAQ'ni tekshiradi
+3. FAQ'da javob bo'lsa → darhol ko'rsatadi
+4. FAQ'da yo'q bo'lsa → Gemini AI ga so'raydi
+5. Chat history avtomatik saqlanadi
+
+## 📱 Telegram Bot
+
+### Setup / O'rnatish
+
+1. **Bot yaratish (BotFather):**
+```bash
+# Telegram'da @BotFather ga yuboring:
+/newbot
+# Bot nomi: TexnoAI Assistant
+# Username: texnoai_bot
+```
+
+2. **Bot'ni o'rnatish:**
+```bash
+cd telegram-bot
+npm install
+cp .env.example .env
+# .env faylida token va kanal ID kiriting
+npm start
+```
+
+### Environment Variables
+```env
+TELEGRAM_BOT_TOKEN=7123456789:AAH...your_token
+TELEGRAM_CHANNEL_ID=@texnoai_channel
+PORT=3001
+```
+
+### Bot Buyruqlari / Commands
+- `/start` - Botni boshlash
+- `/narx` - Narxlar ro'yxati
+- `/xizmatlar` - Xizmatlar haqida
+- `/portfolio` - Portfolio ko'rish
+- `/aloqa` - Bog'lanish ma'lumotlari
+- `/yordam` - Yordam
+
+### Auto-posting to Channel
+
+Har bir yangi blog post avtomatik Telegram kanalingizga yuboriladi:
+
+1. **Admin Panel** → Dashboard → Auto-post sozlamalari
+2. "📱 Telegram kanalga yuborish" checkbox'ini yoqing
+3. Telegram bot backend'ni ishga tushiring:
+```bash
+cd telegram-bot
+npm start
+```
+4. Postlar avtomatik kanalga yuboriladi!
+
+### API Endpoints
+
+**POST** `/api/post-to-channel` - Kanalga post yuborish
+```json
+{
+  "title": "Post sarlavhasi",
+  "excerpt": "Qisqa tavsif",
+  "tags": ["AI", "Tech"],
+  "date": "2024-01-01",
+  "url": "https://texnoai.uz/blog/123"
+}
+```
+
+**GET** `/api/health` - Bot status
+**GET** `/api/bot-info` - Bot ma'lumotlari
 
 ## 🎨 Dizayn va Tema / Design & Theme
 
